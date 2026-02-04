@@ -106,4 +106,3 @@ fastapi-math-service/
 
 ```
 
----
