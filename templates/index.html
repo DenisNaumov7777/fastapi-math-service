@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MathOps Enterprise Interface</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        body { background-color: #f4f6f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .main-card { 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05); 
+            border: none; 
+            border-radius: 12px;
+        }
+        .center-heading { color: #2c3e50; font-weight: 700; }
+        .result-box { 
+            padding: 20px; 
+            text-align: center; 
+            font-size: 1.8em; 
+            font-weight: bold; 
+            background: #ffffff;
+            border: 2px dashed #dee2e6;
+            border-radius: 8px;
+            color: #495057;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-xl { padding: 10px 20px; font-weight: 600; min-width: 120px; }
+    </style>
+</head>
+<body>
+    <div class="container" style="max-width: 800px; margin-top: 60px;">
+        <div class="card main-card">
+            <div class="card-body p-5">
+                <h1 class="center-heading text-center mb-2">🧮 MathOps Service</h1> 
+                <p class="text-center text-muted mb-5">High-Performance Calculation Microservice</p>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label font-weight-bold">Operand 1</label>
+                        <input type="number" class="form-control form-control-lg" id="num1" value="10" placeholder="Enter number">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label font-weight-bold">Operand 2</label>
+                        <input type="number" class="form-control form-control-lg" id="num2" value="5" placeholder="Enter number">
+                    </div>
+                </div>
+        
+                <div class="text-center mt-4">
+                    <button onclick="sendRequest('sum')" class="btn btn-primary btn-xl mx-1 mb-2">Add (+)</button>
+                    <button onclick="sendRequest('sub')" class="btn btn-warning btn-xl mx-1 mb-2 text-white">Sub (-)</button>
+                    <button onclick="sendRequest('mul')" class="btn btn-success btn-xl mx-1 mb-2">Mult (×)</button>
+                    <button onclick="sendRequest('div')" class="btn btn-info btn-xl mx-1 mb-2">Div (÷)</button>
+                </div>
+                
+                <hr class="my-5">
+                
+                <h4 class="text-center text-secondary mb-3">Server Response</h4> 
+                <div class="result-box">
+                    <div id="system_response">Ready for input...</div>
+                </div>
+            </div>
+            <div class="card-footer text-muted text-center py-3">
+                Built with FastAPI & Python • Cologne, Germany
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function sendRequest(operation) {
+            const num1 = document.getElementById('num1').value;
+            const num2 = document.getElementById('num2').value;
+            const outputDiv = document.getElementById("system_response");
+
+            // Input Validation
+            if (!num1 || !num2) {
+                outputDiv.innerText = "⚠️ Please enter valid numbers";
+                outputDiv.style.color = "#dc3545";
+                outputDiv.style.borderColor = "#dc3545";
+                return;
+            }
+
+            // UI Feedback (Processing state)
+            outputDiv.innerText = "Processing...";
+            outputDiv.style.color = "gray";
+            outputDiv.style.borderColor = "#dee2e6";
+
+            try {
+                // Construct URL query parameters
+                const url = `/${operation}?num1=${num1}&num2=${num2}`;
+                const response = await fetch(url);
+                
+                // Error Handling
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    // FastAPI returns errors in 'detail' (standard) or 'message' (custom handler)
+                    const errorMessage = errorData.detail || errorData.message || "Server Error";
+                    throw new Error(errorMessage);
+                }
+
+                // Success Response
+                const text = await response.text();
+                outputDiv.innerText = text;
+                outputDiv.style.color = "#28a745"; // Success Green
+                outputDiv.style.borderColor = "#28a745";
+
+            } catch (error) {
+                console.error(error);
+                outputDiv.innerText = error.message;
+                outputDiv.style.color = "#dc3545"; // Error Red
+                outputDiv.style.borderColor = "#dc3545";
+            }
+        }
+    </script>
+</body>
+</html>
