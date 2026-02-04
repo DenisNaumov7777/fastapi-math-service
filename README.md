@@ -104,5 +104,5 @@ fastapi-math-service/
 
 *Developed with ❤️ in Cologne.*
 
-```
+
 
